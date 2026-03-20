@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Obra {
+  id                String   @id @default(uuid())
+  quadra            String
+  lote              String
+  endereco_completo String?
+  empreiteiro       String?
+  observacoes       String?
+  status            String   @default("em_andamento")
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  fotos             Foto[]
+  relatorios        Relatorio[]
+}
+
+model Foto {
+  id          String   @id @default(uuid())
+  obra_id     String
+  arquivo     String
+  ordem       Int      @default(0)
+  observacao  String?
+  capa        Boolean  @default(false)
+  created_at  DateTime @default(now())
+  obra        Obra     @relation(fields: [obra_id], references: [id], onDelete: Cascade)
+}
+
+model Relatorio {
+  id          String   @id @default(uuid())
+  obra_id     String
+  pdf_path    String
+  total_fotos Int
+  created_at  DateTime @default(now())
+  obra        Obra     @relation(fields: [obra_id], references: [id], onDelete: Cascade)
+}
